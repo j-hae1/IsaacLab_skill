@@ -13,7 +13,7 @@ from isaaclab_tasks.manager_based.locomotion.velocity.velocity_env_cfg import Lo
 ##
 # Pre-defined configs
 ##
-from isaaclab_assets import G1_MINIMAL_CFG  # isort: skip
+from isaaclab_assets import G1_MINIMAL_CFG, G1_LIDAR_CFG  # isort: skip
 
 
 @configclass
@@ -69,35 +69,51 @@ class G1Rewards(RewardsCfg):
                     ".*_shoulder_pitch_joint",
                     ".*_shoulder_roll_joint",
                     ".*_shoulder_yaw_joint",
-                    ".*_elbow_pitch_joint",
-                    ".*_elbow_roll_joint",
+                    # ".*_elbow_pitch_joint",
+                    # ".*_elbow_roll_joint",
+                    ".*_elbow_joint",
                 ],
             )
         },
     )
-    joint_deviation_fingers = RewTerm(
-        func=mdp.joint_deviation_l1,
-        weight=-0.05,
-        params={
-            "asset_cfg": SceneEntityCfg(
-                "robot",
-                joint_names=[
-                    ".*_five_joint",
-                    ".*_three_joint",
-                    ".*_six_joint",
-                    ".*_four_joint",
-                    ".*_zero_joint",
-                    ".*_one_joint",
-                    ".*_two_joint",
-                ],
-            )
-        },
-    )
-    joint_deviation_torso = RewTerm(
-        func=mdp.joint_deviation_l1,
-        weight=-0.1,
-        params={"asset_cfg": SceneEntityCfg("robot", joint_names="torso_joint")},
-    )
+    # joint_deviation_fingers = RewTerm(
+    #     func=mdp.joint_deviation_l1,
+    #     weight=-0.05,
+    #     params={
+    #         "asset_cfg": SceneEntityCfg(
+    #             "robot",
+    #             joint_names=[
+    #                 ".*_five_joint",
+    #                 ".*_three_joint",
+    #                 ".*_six_joint",
+    #                 ".*_four_joint",
+    #                 ".*_zero_joint",
+    #                 ".*_one_joint",
+    #                 ".*_two_joint",
+    #             ],
+    #         )
+    #     },
+    # )
+    # joint_deviation_torso = RewTerm(
+    #     func=mdp.joint_deviation_l1,
+    #     weight=-0.1,
+    #     params={"asset_cfg": SceneEntityCfg("robot", joint_names="torso_joint")},
+    # )
+    joint_deviation_waist = RewTerm(
+            func=mdp.joint_deviation_l1,
+            weight=-0.1,
+            params={
+                "asset_cfg": SceneEntityCfg(
+                    "robot",
+                    joint_names=[
+                        "waist_roll_joint",  # NOTE(HH) include or not?
+                        "waist_pitch_joint",  # NOTE(HH) include or not?
+                        # "waist_yaw_joint",  # NOTE(HH) include or not?
+                    ],
+                )
+            },
+        )
+
 
 
 @configclass
@@ -108,7 +124,8 @@ class G1RoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         # post init of parent
         super().__post_init__()
         # Scene
-        self.scene.robot = G1_MINIMAL_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
+        # self.scene.robot = G1_MINIMAL_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
+        self.scene.robot = G1_LIDAR_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
         self.scene.height_scanner.prim_path = "{ENV_REGEX_NS}/Robot/torso_link"
 
         # Randomization
